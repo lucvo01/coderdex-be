@@ -1,11 +1,12 @@
 var express = require("express");
 var router = express.Router();
 const fs = require("fs");
+const { type } = require("os");
 
 /* GET all pokemons listing. */
 router.get("/", function (req, res, next) {
   //input validation
-  const allowedFilter = ["Name", "Type1", "Type2"];
+  const allowedFilter = ["Name", "Type"];
   try {
     let { page, limit, ...filterQuery } = req.query;
     page = parseInt(page) || 1;
@@ -106,19 +107,38 @@ router.get("/:id", function (req, res, next) {
 // API for creating new Pokémon
 router.post("/", function (req, res, next) {
   try {
-    const { Name, Type1, Type2, id } = req.body;
-    if (!Name || !Type1) {
+    const { Name, Type, id } = req.body;
+    if (!Name || !Type) {
       const error = new Error("Missing body info");
+      error.statusCode = 401;
+      throw error;
+    }
+    if (Type.length > 2) {
+      const error = new Error("Pokémon can only have one or two types.");
       error.statusCode = 401;
       throw error;
     }
 
     let db = fs.readFileSync("pokemons.json", "utf-8");
     db = JSON.parse(db);
-
     const { pokemons } = db;
 
-    const newPokemon = { Name, Type1, Type2, id: pokemons.length + 1 };
+    const types = [];
+    pokemons.forEach((pokemon) => types.push(pokemon.Type));
+    if (!types.includes(Type)) {
+      const error = new Error("Pokémon's type is invalid.");
+      error.statusCode = 401;
+      throw error;
+    }
+    pokemons.forEach((pokemon) => {
+      if (Name === pokemon.Name || id === pokemon.id) {
+        const error = new Error("The Pokémon already exists.");
+        error.statusCode = 401;
+        throw error;
+      }
+    });
+
+    const newPokemon = { Name, Type, id: pokemons.length + 1 };
 
     db.pokemons.push(newPokemon);
 
