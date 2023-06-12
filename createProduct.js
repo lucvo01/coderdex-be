@@ -1,5 +1,6 @@
 const fs = require("fs");
 const csv = require("csvtojson");
+const { url } = require("inspector");
 
 const createProduct = async () => {
   const imageFiles = fs.readdirSync("./images");
@@ -12,9 +13,10 @@ const createProduct = async () => {
     return imageFiles.includes(imageName);
   });
 
-  //   Add an id for every pokemon
+  //   Add an id and image url  for every pokemon
   newData = newData.map((pokemon, index) => {
-    return { ...pokemon, id: index + 1 };
+    let url = `./images/${pokemon.Name}.png`;
+    return { ...pokemon, id: index + 1, url: url };
   });
 
   // Combine Type1 & Type2 into one Type array
