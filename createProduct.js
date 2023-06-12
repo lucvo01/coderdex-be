@@ -28,7 +28,7 @@ const createProduct = async () => {
   });
 
   let data = JSON.parse(fs.readFileSync("pokemons.json", "utf-8"));
-  data.pokemons = newData;
+  data.data = newData;
 
   fs.writeFileSync("pokemons.json", JSON.stringify(data));
 };

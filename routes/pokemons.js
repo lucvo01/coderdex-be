@@ -4,7 +4,7 @@ var router = express.Router();
 const fs = require("fs");
 const { type } = require("os");
 
-/* GET all pokemons listing. */
+/* GET all data listing. */
 router.get("/", function (req, res, next) {
   //input validation
   const allowedFilter = ["Name", "Type"];
@@ -29,9 +29,9 @@ router.get("/", function (req, res, next) {
     let offset = limit * (page - 1);
 
     //Read data from db.json then parse to JSobject
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
-    const { pokemons } = db;
+    const { data } = db;
     //Filter data by title
     let result = [];
 
@@ -41,12 +41,12 @@ router.get("/", function (req, res, next) {
           ? result.filter(
               (pokemon) => pokemon[condition] === filterQuery[condition]
             )
-          : pokemons.filter(
+          : data.filter(
               (pokemon) => pokemon[condition] === filterQuery[condition]
             );
       });
     } else {
-      result = pokemons;
+      result = data;
     }
     //then select number of result by offset
     result = result.slice(offset, offset + limit);
@@ -63,13 +63,11 @@ router.get("/:id", function (req, res, next) {
   try {
     const pokemonId = parseInt(req.params.id);
 
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
-    const { pokemons } = db;
+    const { data } = db;
 
-    const targetIndex = pokemons.findIndex(
-      (pokemon) => pokemonId === pokemon.id
-    );
+    const targetIndex = data.findIndex((pokemon) => pokemonId === pokemon.id);
 
     if (targetIndex < 0) {
       const error = new Error("Pokemon not found");
@@ -77,7 +75,7 @@ router.get("/:id", function (req, res, next) {
       throw error;
     }
 
-    const lastIndex = pokemons.length - 1;
+    const lastIndex = data.length - 1;
     let previousIndex = targetIndex - 1;
     let nextIndex = targetIndex + 1;
 
@@ -88,9 +86,9 @@ router.get("/:id", function (req, res, next) {
       previousIndex = lastIndex;
     }
 
-    const pokemon = pokemons[targetIndex];
-    const previousPokemon = pokemons[previousIndex];
-    const nextPokemon = pokemons[nextIndex];
+    const pokemon = data[targetIndex];
+    const previousPokemon = data[previousIndex];
+    const nextPokemon = data[nextIndex];
 
     const result = {
       pokemon,
@@ -120,19 +118,19 @@ router.post("/", function (req, res, next) {
       throw error;
     }
 
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
-    const { pokemons } = db;
+    const { data } = db;
 
     const allTypes = [];
-    pokemons.forEach((pokemon) => allTypes.push(...pokemon.Type));
+    data.forEach((pokemon) => allTypes.push(...pokemon.Type));
 
     if (!Type.every((element) => allTypes.includes(element))) {
       const error = new Error("Pokémon's type is invalid.");
       error.statusCode = 401;
       throw error;
     }
-    pokemons.forEach((pokemon) => {
+    data.forEach((pokemon) => {
       if (Name === pokemon.Name || id === pokemon.id) {
         const error = new Error("The Pokémon already exists.");
         error.statusCode = 401;
@@ -140,11 +138,11 @@ router.post("/", function (req, res, next) {
       }
     });
 
-    const newPokemon = { Name, Type, id: pokemons.length + 1 };
+    const newPokemon = { Name, Type, id: data.length + 1 };
 
-    db.pokemons.push(newPokemon);
+    db.data.push(newPokemon);
 
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync("data.json", JSON.stringify(db));
 
     res.status(200).send(newPokemon);
   } catch (error) {
@@ -172,14 +170,12 @@ router.put("/:id", function (req, res, next) {
 
     //put processing
     //Read data from db.json then parse to JSobject
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
-    const pokemons = db.pokemons;
+    const data = db.data;
 
     //find pokemon by id
-    const targetIndex = pokemons.findIndex(
-      (pokemon) => pokemon.id === pokemonId
-    );
+    const targetIndex = data.findIndex((pokemon) => pokemon.id === pokemonId);
 
     if (targetIndex < 0) {
       const exception = new Error(`Pokemon not found`);
@@ -188,10 +184,10 @@ router.put("/:id", function (req, res, next) {
     }
 
     //Update new content to db book JS object
-    const updatedPokemon = { ...db.pokemons[targetIndex], ...updates };
+    const updatedPokemon = { ...db.data[targetIndex], ...updates };
 
     //write and save to db.json
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync("data.json", JSON.stringify(db));
 
     //put send response
     res.status(200).send(updatedPokemon);
@@ -205,10 +201,10 @@ router.delete("/:id", function (req, res, next) {
   try {
     const pokemonId = parseInt(req.params.id);
 
-    let db = fs.readFileSync("pokemons.json", "utf-8");
+    let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
 
-    const targetIndex = db.pokemons.findIndex(
+    const targetIndex = db.data.findIndex(
       (pokemon) => pokemon.id === pokemonId
     );
 
@@ -220,9 +216,9 @@ router.delete("/:id", function (req, res, next) {
     console.log(pokemonId);
     console.log(targetIndex);
 
-    db.pokemons = db.pokemons.filter((pokemon) => pokemon.id !== pokemonId);
+    db.data = db.data.filter((pokemon) => pokemon.id !== pokemonId);
 
-    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+    fs.writeFileSync("data.json", JSON.stringify(db));
 
     res.status(200).send({});
   } catch (error) {
