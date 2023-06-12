@@ -1,3 +1,4 @@
+const { error } = require("console");
 var express = require("express");
 var router = express.Router();
 const fs = require("fs");
@@ -123,9 +124,10 @@ router.post("/", function (req, res, next) {
     db = JSON.parse(db);
     const { pokemons } = db;
 
-    const types = [];
-    pokemons.forEach((pokemon) => types.push(pokemon.Type));
-    if (!types.includes(Type)) {
+    const allTypes = [];
+    pokemons.forEach((pokemon) => allTypes.push(...pokemon.Type));
+
+    if (!Type.every((element) => allTypes.includes(element))) {
       const error = new Error("Pokémon's type is invalid.");
       error.statusCode = 401;
       throw error;
@@ -142,10 +144,87 @@ router.post("/", function (req, res, next) {
 
     db.pokemons.push(newPokemon);
 
-    // db.pokemons = pokemons;
     fs.writeFileSync("pokemons.json", JSON.stringify(db));
 
     res.status(200).send(newPokemon);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//  API for updating a Pokémon
+router.put("/:id", function (req, res, next) {
+  try {
+    const allowUpdate = ["Name", "Type"];
+
+    const pokemonId = parseInt(req.params.id);
+    const updates = req.body;
+    const updateKeys = Object.keys(updates);
+
+    //find update request that not allow
+    const notAllow = updateKeys.filter((el) => !allowUpdate.includes(el));
+
+    if (notAllow.length) {
+      const exception = new Error(`Update field not allow`);
+      exception.statusCode = 401;
+      throw exception;
+    }
+
+    //put processing
+    //Read data from db.json then parse to JSobject
+    let db = fs.readFileSync("pokemons.json", "utf-8");
+    db = JSON.parse(db);
+    const pokemons = db.pokemons;
+
+    //find pokemon by id
+    const targetIndex = pokemons.findIndex(
+      (pokemon) => pokemon.id === pokemonId
+    );
+
+    if (targetIndex < 0) {
+      const exception = new Error(`Pokemon not found`);
+      exception.statusCode = 404;
+      throw exception;
+    }
+
+    //Update new content to db book JS object
+    const updatedPokemon = { ...db.pokemons[targetIndex], ...updates };
+
+    //write and save to db.json
+    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+
+    //put send response
+    res.status(200).send(updatedPokemon);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// API for deleting a Pokémon by Id
+router.delete("/:id", function (req, res, next) {
+  try {
+    const pokemonId = parseInt(req.params.id);
+
+    let db = fs.readFileSync("pokemons.json", "utf-8");
+    db = JSON.parse(db);
+
+    const targetIndex = db.pokemons.findIndex(
+      (pokemon) => pokemon.id === pokemonId
+    );
+
+    if (targetIndex < 0) {
+      const error = new Error("Pokemon not found");
+      error.statusCode = 401;
+      throw error;
+    }
+    console.log(pokemonId);
+    console.log(targetIndex);
+
+    db.pokemons = db.pokemons.filter((pokemon) => pokemon.id !== pokemonId);
+
+    fs.writeFileSync("pokemons.json", JSON.stringify(db));
+
+    res.status(200).send({});
   } catch (error) {
     next(error);
   }
