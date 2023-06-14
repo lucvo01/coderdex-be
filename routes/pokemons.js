@@ -36,19 +36,6 @@ router.get("/", function (req, res, next) {
     //Filter data by title
     let result = [];
 
-    // if (filterKeys.length) {
-    //   filterKeys.forEach((key) => {
-    //     result = result.length
-    //       ? result.filter((pokemon) => pokemon[key] === filterQuery[key])
-    //       : data.filter((pokemon) => pokemon[key] === filterQuery[key]);
-    //   });
-    //   // console.log("pokemon[key]", pokemon[key]);
-
-    //   console.log("result1", result);
-    // } else {
-    //   result = data;
-    // }
-
     if (filterQuery.type) {
       const searchQuery = filterQuery.type.toLowerCase();
       console.log(searchQuery);
