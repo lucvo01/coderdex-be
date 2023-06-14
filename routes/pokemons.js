@@ -36,20 +36,31 @@ router.get("/", function (req, res, next) {
     //Filter data by title
     let result = [];
 
-    if (filterQuery.type) {
-      const searchQuery = filterQuery.type.toLowerCase();
-      console.log(searchQuery);
-      result = data.filter((pokemon) => pokemon.type.includes(searchQuery));
-    }
+    if (filterKeys.length) {
+      // filterKeys.forEach((key) => {
+      //   result = result.length
+      //     ? result.filter((pokemon) => pokemon[key] === filterQuery[key])
+      //     : data.filter((pokemon) => pokemon[key] === filterQuery[key]);
+      // });
+      // console.log("result1", result);
+      if (filterQuery.type) {
+        const searchQuery = filterQuery.type.toLowerCase();
+        console.log(searchQuery);
+        result = data.filter((pokemon) => pokemon.type.includes(searchQuery));
+      }
 
-    if (filterQuery.search) {
-      const searchQuery = filterQuery.search.toLowerCase();
-      console.log("searchQuery", searchQuery);
-      result = data.filter((pokemon) => {
-        return (
-          pokemon.name.includes(searchQuery) || pokemon.id.includes(searchQuery)
-        );
-      });
+      if (filterQuery.search) {
+        const searchQuery = filterQuery.search.toLowerCase();
+        console.log("searchQuery", searchQuery);
+        result = data.filter((pokemon) => {
+          return (
+            pokemon.name.includes(searchQuery) ||
+            pokemon.id.includes(searchQuery)
+          );
+        });
+      }
+    } else {
+      result = data;
     }
 
     //then select number of result by offset
