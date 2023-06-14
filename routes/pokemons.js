@@ -1,4 +1,4 @@
-const { error } = require("console");
+const { error, debug } = require("console");
 var express = require("express");
 var router = express.Router();
 const fs = require("fs");
@@ -7,21 +7,22 @@ const { type } = require("os");
 /* GET all data listing. */
 router.get("/", function (req, res, next) {
   //input validation
-  const allowedFilter = ["Name", "Type"];
+  const allowedFilter = ["name", "type", "search", "id"];
   try {
     let { page, limit, ...filterQuery } = req.query;
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
 
     const filterKeys = Object.keys(filterQuery);
+    console.log("filterKeys", filterKeys);
 
     filterKeys.forEach((key) => {
       if (!allowedFilter.includes(key)) {
-        const exception = new Error(`Query ${key} is not allowed`);
-        exception.statusCode = 401;
-        throw exception;
+        const error = new Error(`Query ${key} is not allowed`);
+        error.statusCode = 401;
+        throw error;
       }
-      if (!filterQuery.key) delete filterQuery.key;
+      if (!filterQuery[key]) delete filterQuery[key];
     });
 
     //processing logic
@@ -35,18 +36,32 @@ router.get("/", function (req, res, next) {
     //Filter data by title
     let result = [];
 
-    if (filterKeys.length) {
-      filterKeys.forEach((condition) => {
-        result = result.length
-          ? result.filter(
-              (pokemon) => pokemon[condition] === filterQuery[condition]
-            )
-          : data.filter(
-              (pokemon) => pokemon[condition] === filterQuery[condition]
-            );
+    // if (filterKeys.length) {
+    //   filterKeys.forEach((key) => {
+    //     result = result.length
+    //       ? result.filter((pokemon) => pokemon[key] === filterQuery[key])
+    //       : data.filter((pokemon) => pokemon[key] === filterQuery[key]);
+    //   });
+    //   // console.log("pokemon[key]", pokemon[key]);
+
+    //   console.log("result1", result);
+    // } else {
+    //   result = data;
+    // }
+
+    if (filterQuery.type) {
+      const searchQuery = filterQuery.type.toLowerCase();
+      console.log(searchQuery);
+      result = data.filter((pokemon) => pokemon.type.includes(searchQuery));
+    }
+    if (filterQuery.search) {
+      const searchQuery = filterQuery.search.toLowerCase();
+      console.log("searchQuery", searchQuery);
+      result = data.filter((pokemon) => {
+        return (
+          pokemon.name.includes(searchQuery) || pokemon.id.includes(searchQuery)
+        );
       });
-    } else {
-      result = data;
     }
     //then select number of result by offset
     result = result.slice(offset, offset + limit);
@@ -163,9 +178,9 @@ router.put("/:id", function (req, res, next) {
     const notAllow = updateKeys.filter((el) => !allowUpdate.includes(el));
 
     if (notAllow.length) {
-      const exception = new Error(`Update field not allow`);
-      exception.statusCode = 401;
-      throw exception;
+      const error = new Error(`Update field not allow`);
+      error.statusCode = 401;
+      throw error;
     }
 
     //put processing
@@ -178,9 +193,9 @@ router.put("/:id", function (req, res, next) {
     const targetIndex = data.findIndex((pokemon) => pokemon.id === pokemonId);
 
     if (targetIndex < 0) {
-      const exception = new Error(`Pokemon not found`);
-      exception.statusCode = 404;
-      throw exception;
+      const error = new Error(`Pokemon not found`);
+      error.statusCode = 404;
+      throw error;
     }
 
     //Update new content to db book JS object
