@@ -7,7 +7,7 @@ const { type } = require("os");
 /* GET all data listing. */
 router.get("/", function (req, res, next) {
   //input validation
-  const allowedFilter = ["Name", "Type"];
+  const allowedFilter = ["search", "type"];
   try {
     let { page, limit, ...filterQuery } = req.query;
     page = parseInt(page) || 1;
@@ -36,14 +36,10 @@ router.get("/", function (req, res, next) {
     let result = [];
 
     if (filterKeys.length) {
-      filterKeys.forEach((condition) => {
+      filterKeys.forEach((query) => {
         result = result.length
-          ? result.filter(
-              (pokemon) => pokemon[condition] === filterQuery[condition]
-            )
-          : data.filter(
-              (pokemon) => pokemon[condition] === filterQuery[condition]
-            );
+          ? result.filter((pokemon) => pokemon[query] === filterQuery[query])
+          : data.filter((pokemon) => pokemon[query] === filterQuery[query]);
       });
     } else {
       result = data;
