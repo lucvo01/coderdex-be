@@ -7,11 +7,7 @@ const { type } = require("os");
 /* GET all data listing. */
 router.get("/", function (req, res, next) {
   //input validation
-<<<<<<< HEAD
   const allowedFilter = ["name", "type", "search", "id"];
-=======
-  const allowedFilter = ["search", "type"];
->>>>>>> origin/main
   try {
     let { page, limit, ...filterQuery } = req.query;
     page = parseInt(page) || 1;
@@ -40,7 +36,6 @@ router.get("/", function (req, res, next) {
     //Filter data by title
     let result = [];
 
-<<<<<<< HEAD
     // if (filterKeys.length) {
     //   filterKeys.forEach((key) => {
     //     result = result.length
@@ -59,6 +54,7 @@ router.get("/", function (req, res, next) {
       console.log(searchQuery);
       result = data.filter((pokemon) => pokemon.type.includes(searchQuery));
     }
+
     if (filterQuery.search) {
       const searchQuery = filterQuery.search.toLowerCase();
       console.log("searchQuery", searchQuery);
@@ -66,15 +62,9 @@ router.get("/", function (req, res, next) {
         return (
           pokemon.name.includes(searchQuery) || pokemon.id.includes(searchQuery)
         );
-=======
-    if (filterKeys.length) {
-      filterKeys.forEach((query) => {
-        result = result.length
-          ? result.filter((pokemon) => pokemon[query] === filterQuery[query])
-          : data.filter((pokemon) => pokemon[query] === filterQuery[query]);
->>>>>>> origin/main
       });
     }
+
     //then select number of result by offset
     result = result.slice(offset, offset + limit);
     //send response
