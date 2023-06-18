@@ -76,8 +76,7 @@ router.get("/", function (req, res, next) {
 router.get("/:id", function (req, res, next) {
   //put input validation
   try {
-    const pokemonId = parseInt(req.params.id);
-
+    const pokemonId = req.params.id;
     let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
     const { data } = db;
@@ -170,7 +169,7 @@ router.put("/:id", function (req, res, next) {
   try {
     const allowUpdate = ["Name", "Type"];
 
-    const pokemonId = parseInt(req.params.id);
+    const pokemonId = req.params.id;
     const updates = req.body;
     const updateKeys = Object.keys(updates);
 
@@ -214,7 +213,7 @@ router.put("/:id", function (req, res, next) {
 // API for deleting a Pokémon by Id
 router.delete("/:id", function (req, res, next) {
   try {
-    const pokemonId = parseInt(req.params.id);
+    const pokemonId = req.params.id;
 
     let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
