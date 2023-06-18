@@ -20,7 +20,7 @@ const createProduct = async () => {
       id: (index + 1).toString(),
       url: url,
       name: pokemon.Name,
-      type: [pokemon.Type1, pokemon.Type2]
+      types: [pokemon.Type1, pokemon.Type2]
         .filter(Boolean)
         .map((type) => type.toLowerCase())
     };
