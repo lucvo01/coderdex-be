@@ -4,7 +4,7 @@ const { url } = require("inspector");
 
 const createProduct = async () => {
   const imageFiles = fs.readdirSync("./images");
-
+  // console.log(imageFiles);
   let newData = await csv().fromFile("pokemon.csv");
 
   //   Filter data to only get pokemons that have corresponding images
@@ -13,8 +13,37 @@ const createProduct = async () => {
     return imageFiles.includes(imageName);
   });
 
+  // Create url for each image
+  const cloudinary = require("cloudinary").v2;
+  // Configure Cloudinary with your credentials
+  cloudinary.config({
+    cloud_name: "dx3cu4deo",
+    api_key: "649228862156515",
+    api_secret: "tp0C0m1ZKvlU1gVP2R0wKbu-E3E"
+  });
+
+  let urlList = [];
+  imageFiles.forEach(async (item) => {
+    // Upload an image
+    try {
+      const response = await cloudinary.uploader.upload(`./images/${item}`, {
+        public_id: item.slice(0, -4)
+      });
+      const imageUrl = response.secure_url;
+      // console.log(imageUrl);
+      urlList.push(imageUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+  console.log("urlList", urlList);
+
   newData = newData.map((pokemon, index) => {
-    const url = `./images/${pokemon.Name}.png`;
+    // const url = `./images/${pokemon.Name}.png`;
+    const url = urlList.find((url) => {
+      url.includes(pokemon.Name);
+    });
+
     const transformedPokemon = {
       ...pokemon,
       id: (index + 1).toString(),
@@ -31,23 +60,6 @@ const createProduct = async () => {
 
     return transformedPokemon;
   });
-  //   Add an id and image url  for every pokemon
-  // newData = newData.map((pokemon, index) => {
-  //   let url = `./images/${pokemon.Name}.png`;
-  //   return { ...pokemon, id: (index + 1).toString(), url: url };
-  // });
-
-  // // Combine Type1 & Type2 into one Type array
-  // newData = newData.filter((pokemon) => {
-  //   pokemon.name = pokemon.Name;
-  //   delete pokemon.Name;
-  //   pokemon.Type1 = pokemon.Type1.toLowerCase();
-  //   pokemon.Type2 = pokemon.Type2.toLowerCase();
-  //   pokemon.type = [pokemon.Type1, pokemon.Type2].filter(Boolean);
-  //   delete pokemon.Type1;
-  //   delete pokemon.Type2;
-  //   return { ...pokemon };
-  // });
 
   let data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
   data.data = newData;
