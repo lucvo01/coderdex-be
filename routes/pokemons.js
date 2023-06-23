@@ -33,20 +33,15 @@ router.get("/", function (req, res, next) {
     let db = fs.readFileSync("data.json", "utf-8");
     db = JSON.parse(db);
     const { data } = db;
+
     //Filter data by title
     let result = [];
 
     if (filterKeys.length) {
-      // filterKeys.forEach((key) => {
-      //   result = result.length
-      //     ? result.filter((pokemon) => pokemon[key] === filterQuery[key])
-      //     : data.filter((pokemon) => pokemon[key] === filterQuery[key]);
-      // });
-      // console.log("result1", result);
       if (filterQuery.type) {
         const searchQuery = filterQuery.type.toLowerCase();
-        console.log(searchQuery);
-        result = data.filter((pokemon) => pokemon.type.includes(searchQuery));
+        console.log("searchQuery", searchQuery);
+        result = data.filter((pokemon) => pokemon.types.includes(searchQuery));
       }
 
       if (filterQuery.search) {

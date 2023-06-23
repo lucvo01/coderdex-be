@@ -1,6 +1,5 @@
 const fs = require("fs");
 const csv = require("csvtojson");
-const { url } = require("inspector");
 
 const createProduct = async () => {
   const imageFiles = fs.readdirSync("./images");
@@ -13,35 +12,13 @@ const createProduct = async () => {
     return imageFiles.includes(imageName);
   });
 
-  // Create url for each image
-  const cloudinary = require("cloudinary").v2;
-  // Configure Cloudinary with your credentials
-  cloudinary.config({
-    cloud_name: "dx3cu4deo",
-    api_key: "649228862156515",
-    api_secret: "tp0C0m1ZKvlU1gVP2R0wKbu-E3E"
-  });
-
-  let urlList = [];
-  imageFiles.forEach(async (item) => {
-    // Upload an image
-    try {
-      const response = await cloudinary.uploader.upload(`./images/${item}`, {
-        public_id: item.slice(0, -4)
-      });
-      const imageUrl = response.secure_url;
-      // console.log(imageUrl);
-      urlList.push(imageUrl);
-    } catch (error) {
-      console.log(error);
-    }
-  });
-  console.log("urlList", urlList);
-
+  let urlData = JSON.parse(fs.readFileSync("urlData.json", "utf-8"));
+  const urlList = urlData.url;
+  // console.log(urlList);
   newData = newData.map((pokemon, index) => {
     // const url = `./images/${pokemon.Name}.png`;
     const url = urlList.find((url) => {
-      url.includes(pokemon.Name);
+      return url.includes(pokemon.Name);
     });
 
     const transformedPokemon = {
