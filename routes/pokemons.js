@@ -1,3 +1,4 @@
+const { resolve } = require("path");
 const { error, debug } = require("console");
 var express = require("express");
 var router = express.Router();
@@ -30,7 +31,8 @@ router.get("/", function (req, res, next) {
     let offset = limit * (page - 1);
 
     //Read data from db.json then parse to JSobject
-    let db = fs.readFileSync("data.json", "utf-8");
+    const absolutePath = resolve("./data.json");
+    let db = fs.readFileSync(absolutePath, "utf-8");
     db = JSON.parse(db);
     const { data } = db;
 
