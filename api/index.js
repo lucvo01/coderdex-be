@@ -3,8 +3,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-var indexRouter = require("./routes/index");
-var pokemonRouter = require("./routes/pokemons");
+var indexRouter = require("../routes/index");
+// var pokemonRouter = require("../routes/pokemons");
 
 require("dotenv").config();
 const cors = require("cors");
@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 app.use("/", indexRouter);
-app.use("/pokemons", pokemonRouter);
+// app.use("/pokemons", pokemonRouter);
 
 //catch when when request match no route
 app.use((req, res, next) => {
