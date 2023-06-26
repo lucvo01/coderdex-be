@@ -117,7 +117,7 @@ router.get("/:id", function (req, res, next) {
 // API for creating new Pokémon
 router.post("/", function (req, res, next) {
   try {
-    const { name, types, id } = req.body;
+    const { name, types, id, url } = req.body;
     // name = name.toLowerCase();
     // types = types.forEach((item) => item.toLowerCase());
 
@@ -152,7 +152,12 @@ router.post("/", function (req, res, next) {
       }
     });
 
-    const newPokemon = { name, types, id: data.length + 1 };
+    const newPokemon = {
+      name,
+      types,
+      id: id || (data.length + 1).toString(),
+      url: url
+    };
 
     db.data.push(newPokemon);
 
