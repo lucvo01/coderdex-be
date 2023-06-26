@@ -13,10 +13,10 @@ const createProduct = async () => {
   });
 
   let urlData = JSON.parse(fs.readFileSync("urlData.json", "utf-8"));
+
   const urlList = urlData.url;
-  // console.log(urlList);
+
   newData = newData.map((pokemon, index) => {
-    // const url = `./images/${pokemon.Name}.png`;
     const url = urlList.find((url) => {
       return url.includes(pokemon.Name);
     });

@@ -117,14 +117,17 @@ router.get("/:id", function (req, res, next) {
 // API for creating new Pokémon
 router.post("/", function (req, res, next) {
   try {
-    const { Name, Type, id } = req.body;
-    if (!Name || !Type) {
+    const { name, types, id } = req.body;
+    // name = name.toLowerCase();
+    // types = types.forEach((item) => item.toLowerCase());
+
+    if (!name || !types) {
       const error = new Error("Missing body info");
       error.statusCode = 401;
       throw error;
     }
-    if (Type.length > 2) {
-      const error = new Error("Pokémon can only have one or two types.");
+    if (types.length > 2) {
+      const error = new Error("Pokémon can only have one or two typess.");
       error.statusCode = 401;
       throw error;
     }
@@ -134,22 +137,22 @@ router.post("/", function (req, res, next) {
     const { data } = db;
 
     const allTypes = [];
-    data.forEach((pokemon) => allTypes.push(...pokemon.Type));
-
-    if (!Type.every((element) => allTypes.includes(element))) {
+    data.forEach((pokemon) => allTypes.push(...pokemon.types));
+    console.log(allTypes);
+    if (!types.every((element) => allTypes.includes(element))) {
       const error = new Error("Pokémon's type is invalid.");
       error.statusCode = 401;
       throw error;
     }
     data.forEach((pokemon) => {
-      if (Name === pokemon.Name || id === pokemon.id) {
+      if (name === pokemon.name || id === pokemon.id) {
         const error = new Error("The Pokémon already exists.");
         error.statusCode = 401;
         throw error;
       }
     });
 
-    const newPokemon = { Name, Type, id: data.length + 1 };
+    const newPokemon = { name, types, id: data.length + 1 };
 
     db.data.push(newPokemon);
 
@@ -164,7 +167,7 @@ router.post("/", function (req, res, next) {
 //  API for updating a Pokémon
 router.put("/:id", function (req, res, next) {
   try {
-    const allowUpdate = ["Name", "Type"];
+    const allowUpdate = ["name", "Type"];
 
     const pokemonId = req.params.id;
     const updates = req.body;
