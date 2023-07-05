@@ -20,7 +20,7 @@ router.get("/", function (req, res, next) {
     filterKeys.forEach((key) => {
       if (!allowedFilter.includes(key)) {
         const error = new Error(`Query ${key} is not allowed`);
-        error.statusCode = 401;
+        error.statusCode = 400;
         throw error;
       }
       if (!filterQuery[key]) delete filterQuery[key];
@@ -82,7 +82,7 @@ router.get("/:id", function (req, res, next) {
 
     if (targetIndex < 0) {
       const error = new Error("Pokemon not found");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
 
@@ -123,12 +123,12 @@ router.post("/", function (req, res, next) {
 
     if (!name || !types) {
       const error = new Error("Missing body info");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
     if (types.length > 2) {
-      const error = new Error("Pokémon can only have one or two typess.");
-      error.statusCode = 401;
+      const error = new Error("Pokémon can only have one or two types.");
+      error.statusCode = 400;
       throw error;
     }
 
@@ -139,15 +139,16 @@ router.post("/", function (req, res, next) {
     const allTypes = [];
     data.forEach((pokemon) => allTypes.push(...pokemon.types));
     console.log(allTypes);
+    console.log("types", types);
     if (!types.every((element) => allTypes.includes(element))) {
       const error = new Error("Pokémon's type is invalid.");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
     data.forEach((pokemon) => {
       if (name === pokemon.name || id === pokemon.id) {
         const error = new Error("The Pokémon already exists.");
-        error.statusCode = 401;
+        error.statusCode = 400;
         throw error;
       }
     });
@@ -183,7 +184,7 @@ router.put("/:id", function (req, res, next) {
 
     if (notAllow.length) {
       const error = new Error(`Update field not allow`);
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
 
@@ -229,7 +230,7 @@ router.delete("/:id", function (req, res, next) {
 
     if (targetIndex < 0) {
       const error = new Error("Pokemon not found");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
     console.log(pokemonId);
