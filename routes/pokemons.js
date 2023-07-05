@@ -115,8 +115,9 @@ router.get("/:id", function (req, res, next) {
 });
 
 // API for creating new Pokémon
-router.post("/", function (req, res, next) {
+router.post(`/`, function (req, res, next) {
   try {
+    // const pokemonId = req.params.id;
     const { name, types, id, url } = req.body;
     // name = name.toLowerCase();
     // types = types.forEach((item) => item.toLowerCase());
