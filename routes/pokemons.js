@@ -169,7 +169,7 @@ router.post(`/`, function (req, res, next) {
 
     res.status(200).send(newPokemon);
   } catch (error) {
-    next(error);
+    res.status(200).send(error);
   }
 });
 
