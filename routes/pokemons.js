@@ -136,6 +136,7 @@ router.post(`/`, function (req, res, next) {
     }
 
     const absolutePath = resolve("./data.json");
+    const absolutePath2 = resolve("./pokemon.json");
     let db = fs.readFileSync(absolutePath, "utf-8");
 
     db = JSON.parse(db);
@@ -167,7 +168,7 @@ router.post(`/`, function (req, res, next) {
 
     db.data.push(newPokemon);
 
-    fs.writeFileSync(absolutePath, JSON.stringify(db));
+    fs.writeFileSync(absolutePath2, JSON.stringify(db));
 
     res.status(200).send(newPokemon);
   } catch (error) {
