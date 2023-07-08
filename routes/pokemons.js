@@ -4,6 +4,8 @@ var express = require("express");
 var router = express.Router();
 const fs = require("fs");
 const { type } = require("os");
+var path = require("path");
+let rootDir = path.resolve(__dirname);
 
 /* GET all data listing. */
 router.get("/", function (req, res, next) {
@@ -169,7 +171,7 @@ router.post(`/`, function (req, res, next) {
 
     res.status(200).send(newPokemon);
   } catch (error) {
-    res.status(200).send(error);
+    res.status(200).send({ ...error, rootDir });
   }
 });
 
