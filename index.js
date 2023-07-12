@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require("./api/index");
+var app = require("./app.js");
 var debug = require("debug")("pokede:server");
 var http = require("http");
 

@@ -168,7 +168,7 @@ router.post(`/`, function (req, res, next) {
 
     db.data.push(newPokemon);
 
-    fs.writeFileSync(absolutePath2, JSON.stringify(db));
+    fs.writeFileSync(absolutePath, JSON.stringify(db));
 
     res.status(200).send(newPokemon);
   } catch (error) {
